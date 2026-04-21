@@ -38,7 +38,10 @@ public class Console {
 		System.out.println("Goodbye!");
 	}
 
-	
+	// Step 4: Pre-Parser
+	private ArrayList<String> preparser(ArrayList<String> lexed) {
+
+	}
 	
 	/*
 	 * Collects user input, and ...
