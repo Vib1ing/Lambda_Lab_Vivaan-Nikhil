@@ -45,7 +45,7 @@ public class Lexer {
 		if (!temp.isEmpty()) {
 			tokens.add(temp);
 		}
-		System.out.println(tokens);
+		//System.out.println(tokens);
 		return tokens;
 	}
 

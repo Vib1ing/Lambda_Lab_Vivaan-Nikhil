@@ -19,7 +19,8 @@ public class Console {
 		while (! input.equalsIgnoreCase("exit")) {
 			
 			ArrayList<String> tokens = lexer.tokenize(input);
-
+			preparser(tokens);
+			System.out.println(tokens);
 			String output = "";
 			
 			try {
@@ -39,10 +40,41 @@ public class Console {
 	}
 
 	// Step 4: Pre-Parser
-	private ArrayList<String> preparser(ArrayList<String> lexed) {
+	private static void preparser(ArrayList<String> lexed) {
+		for(int i=0; i<lexed.size(); i++){
+			if(lexed.get(i).equals("\\")){
+				boolean wrapped = false;
+				if(i > 0 && lexed.get(i - 1).equals("(")){
+					wrapped=true;
+				}
+				if(!wrapped){
+					lexed.add(i,"(");
+					i++; //because of the addition of the "(" have to increment ts so it points to the lambda again 😛
 
+					int depth_of_bracket=0;
+					int stop=lexed.size();
+
+					for(int j=i+1;j<lexed.size();j++){
+						if(lexed.get(j).equals("(")){
+							depth_of_bracket++;
+						}
+						else if(lexed.get(j).equals(")")){
+							if(depth_of_bracket==0){
+								stop=j;
+								break;
+							}
+							else{
+								depth_of_bracket--;
+							}
+						}
+					}
+					lexed.add(stop, ")"); //add the ")" cuz thats where the lambda ends
+					i=stop; //skip to the stop cuz the inner loop incremented until there
+				}
+			}
+		}
 	}
-	
+
 	/*
 	 * Collects user input, and ...
 	 * ... does a bit of raw string processing to (1) strip away comments,  
