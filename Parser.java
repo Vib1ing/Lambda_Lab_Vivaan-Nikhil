@@ -8,14 +8,52 @@ public class Parser {
 	 * Turns a set of tokens into an expression.  Comment this back in when you're ready.
 	 */
 	public Expression parse(ArrayList<String> tokens) throws ParseException {
-		Variable var = new Variable(tokens.get(0));
-		
-		// This is nonsense code, just to show you how to thrown an Exception.
-		// To throw it, type "error" at the console.
-		if (var.toString().equals("error")) {
-			throw new ParseException("User typed \"Error\" as the input!", 0);
+		ArrayList<ArrayList<String>> top_level_tokens= getTopLevelTokens(tokens);
+		if(top_level_tokens.size()==1){
+			ArrayList<String> top_level_token = top_level_tokens.get(0);
+			if(top_level_token.size()==1){//means ts is a variable
+				return new Variable(top_level_token.get(0));
+			}
+			else{
+				return parse(new ArrayList<>(top_level_token.subList(1,top_level_token.size()-1))); //this is if there's any unnecessary parenthesis in this stuff so that you only have the variable and no useless shit around it
+			}
 		}
-		
-		return var;
+		else{//means ts is an application
+			Expression left = parse(top_level_tokens.get(0));
+			for(int i=1; i<top_level_tokens.size();i++){
+				left = new Application(left, parse(top_level_tokens.get(i)));
+			}
+			return left;
+		}
+	}
+
+	private ArrayList<ArrayList<String>> getTopLevelTokens (ArrayList<String> tokens) {
+		ArrayList<ArrayList<String>> top_level_tokens = new ArrayList<>();//double array list cuz its more convenient cuz you'll have to recurse when you find a top-level item and having a double array list makes it easier
+		int start=0;
+		int stop=0;
+		int depth=0;
+		for(int i=0; i<tokens.size(); i++){
+			if(tokens.get(i).equals("(")){
+				start=i;
+				depth++;
+				while(depth!=0){
+					i++;
+					if(tokens.get(i).equals("(")){
+						depth++;
+					}
+					else if(tokens.get(i).equals(")")){
+						depth--;
+					}
+				}
+				stop=i;
+				top_level_tokens.add(new ArrayList<>(tokens.subList(start,stop+1)));
+			}
+			else{
+				ArrayList<String> single_token = new ArrayList<>();
+				single_token.add(tokens.get(i));
+				top_level_tokens.add(single_token);
+			}
+		}
+		return top_level_tokens;
 	}
 }
