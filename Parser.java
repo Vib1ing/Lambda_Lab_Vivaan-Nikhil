@@ -15,8 +15,11 @@ public class Parser {
 				return new Variable(top_level_token.get(0));
 			}
 			else{
-				return parse(new ArrayList<>(top_level_token.subList(1,top_level_token.size()-1))); //this is if there's any unnecessary parenthesis in this stuff so that you only have the variable and no useless shit around it
+				return parse(new ArrayList<>(top_level_token.subList(1,top_level_token.size()-1))); //this is if there's any unnecessary parenthesis in this stuff so that you only have the variable
 			}
+		}
+		else if (isFunc(top_level_tokens.get(0))) {
+
 		}
 		else{//means ts is an application
 			Expression left = parse(top_level_tokens.get(0));
@@ -29,31 +32,39 @@ public class Parser {
 
 	private ArrayList<ArrayList<String>> getTopLevelTokens (ArrayList<String> tokens) {
 		ArrayList<ArrayList<String>> top_level_tokens = new ArrayList<>();//double array list cuz its more convenient cuz you'll have to recurse when you find a top-level item and having a double array list makes it easier
-		int start=0;
-		int stop=0;
-		int depth=0;
-		for(int i=0; i<tokens.size(); i++){
-			if(tokens.get(i).equals("(")){
-				start=i;
+		int start = 0;
+		int stop = 0;
+		int depth = 0;
+		for (int i = 0; i < tokens.size(); i++) {
+			if (tokens.get(i).equals("(")) {
+				start = i;
 				depth++;
-				while(depth!=0){
+				while (depth != 0) {
 					i++;
-					if(tokens.get(i).equals("(")){
+					if (tokens.get(i).equals("(")) {
 						depth++;
-					}
-					else if(tokens.get(i).equals(")")){
+					} else if (tokens.get(i).equals(")")) {
 						depth--;
 					}
 				}
-				stop=i;
-				top_level_tokens.add(new ArrayList<>(tokens.subList(start,stop+1)));
-			}
-			else{
+				stop = i;
+				top_level_tokens.add(new ArrayList<>(tokens.subList(start, stop + 1)));
+			} else {
 				ArrayList<String> single_token = new ArrayList<>();
 				single_token.add(tokens.get(i));
 				top_level_tokens.add(single_token);
 			}
 		}
 		return top_level_tokens;
+	}
+
+	private boolean isFunc(ArrayList<String> tokens) {
+		if(tokens.size() < 4) {
+			return false;
+		}
+		else {
+            return (tokens.get(0).equals("\\") || tokens.get(0).equals("λ")) && tokens.get(2).equals(".");
+		}
+
 	}
 }
