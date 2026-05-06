@@ -9,6 +9,6 @@ public class Function implements Expression {
     }
 
     public String toString() {
-        return "(λ" + e + "." + v + ")";
+        return "(λ" + v + "." + e + ")";
     }
 }

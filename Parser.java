@@ -14,12 +14,15 @@ public class Parser {
 			if(top_level_token.size()==1){//means ts is a variable
 				return new Variable(top_level_token.get(0));
 			}
+			else if (isFunc(top_level_tokens.get(0))) {
+				Variable var = new Variable(top_level_tokens.get(0).get(2));
+				ArrayList<String> expression_body = new ArrayList<>(top_level_tokens.get(0).subList(4,top_level_tokens.get(0).size()-1));
+				System.out.println(expression_body);
+                return new Function(var, parse(expression_body));
+			}
 			else{
 				return parse(new ArrayList<>(top_level_token.subList(1,top_level_token.size()-1))); //this is if there's any unnecessary parenthesis in this stuff so that you only have the variable
 			}
-		}
-		else if (isFunc(top_level_tokens.get(0))) {
-
 		}
 		else{//means ts is an application
 			Expression left = parse(top_level_tokens.get(0));
@@ -63,7 +66,7 @@ public class Parser {
 			return false;
 		}
 		else {
-            return (tokens.get(0).equals("\\") || tokens.get(0).equals("λ")) && tokens.get(2).equals(".");
+            return (tokens.get(1).equals("\\") || tokens.get(1).equals("λ")) && tokens.get(3).equals(".");
 		}
 
 	}

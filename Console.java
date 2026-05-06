@@ -48,6 +48,14 @@ public class Console {
 					wrapped=true;
 				}
 				if(!wrapped){
+					ArrayList<String> rest = new ArrayList<>(lexed.subList(i+1, lexed.size())); //ts is for nested lambdas cuz without this the lambdas wouldn't look like how they're supposed to and i lowkey forgot to fix this
+					preparser(rest);
+					while(lexed.size()>i+1){ //remove the rest of the lexed to avoid duplication
+						lexed.remove(i+1);
+					}
+					lexed.addAll(rest);
+
+
 					lexed.add(i,"(");
 					i++; //because of the addition of the "(" have to increment ts so it points to the lambda again 😛
 
