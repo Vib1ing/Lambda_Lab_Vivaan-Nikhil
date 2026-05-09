@@ -1,8 +1,14 @@
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Parser {
+	private HashMap<String, Expression> definitions;
+	
+	public Parser(HashMap<String, Expression> definitions) {
+		this.definitions = definitions;
+	}
 	
 	/*
 	 * Turns a set of tokens into an expression.  Comment this back in when you're ready.
@@ -12,7 +18,11 @@ public class Parser {
 		if(top_level_tokens.size()==1){
 			ArrayList<String> top_level_token = top_level_tokens.get(0);
 			if(top_level_token.size()==1){//means ts is a variable
-				return new Variable(top_level_token.get(0));
+				String name = top_level_token.get(0);
+				if (definitions.containsKey(name)) {
+					return definitions.get(name);
+				}
+				return new Variable(name);
 			}
 			else if (isFunc(top_level_tokens.get(0))) {
 				Variable var = new Variable(top_level_tokens.get(0).get(2));

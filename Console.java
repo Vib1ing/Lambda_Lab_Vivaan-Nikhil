@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,15 +13,36 @@ public class Console {
 		in = new Scanner (System.in);
 		
 		Lexer lexer = new Lexer();
-		Parser parser = new Parser();
+		HashMap<String, Expression> definitions = new HashMap<>(); // holds the key-value pairs for the stored expressions
+		Parser parser = new Parser(definitions); // we need the hashmap to be accessible in the parser
 		
 		String input = cleanConsoleInput();  // see comment
 		
-		while (! input.equalsIgnoreCase("exit")) {
+		while (!input.equals("exit")) {
 			
 			ArrayList<String> tokens = lexer.tokenize(input);
+			
+			if (tokens.indexOf("=") == 1) {
+				String var = tokens.get(0);
+				if (definitions.containsKey(var)) {
+					System.out.println(var + " is already defined.");
+					input = cleanConsoleInput(); // i may or may not have encountered an infinite loop
+					continue;
+				}
+				ArrayList<String> expTokens = new ArrayList<>(tokens.subList(2, tokens.size()));
+				preparser(expTokens);
+				try {
+					Expression exp = parser.parse(expTokens);
+					definitions.put(var, exp);
+					System.out.println("Added " + exp.toString() + " as " + var);
+				} catch (Exception e) {
+					System.out.println("Unparsable expression, input was: \"" + input + "\"");
+				}
+				input = cleanConsoleInput();
+				continue;
+			}
+			
 			preparser(tokens);
-			System.out.println(tokens);
 			String output = "";
 			
 			try {
