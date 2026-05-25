@@ -30,6 +30,21 @@ public class Console {
 					continue;
 				}
 				ArrayList<String> expTokens = new ArrayList<>(tokens.subList(2, tokens.size()));
+				if (!expTokens.isEmpty() && expTokens.get(0).equals("run")) {
+					expTokens.remove(0); // strip the "run" keyword
+					preparser(expTokens);
+					try {
+						Expression exp = parser.parse(expTokens);
+						Expression result = Runner.run(exp);
+						definitions.put(var, result);
+						System.out.println("Added " + result.toString() + " as " + var);
+					} catch (Exception e) {
+						System.out.println("Unparsable expression, input was: \"" + input + "\"");
+					}
+					input = cleanConsoleInput();
+					continue;
+				}
+
 				preparser(expTokens);
 				try {
 					Expression exp = parser.parse(expTokens);
@@ -41,7 +56,21 @@ public class Console {
 				input = cleanConsoleInput();
 				continue;
 			}
-			
+
+			if (!tokens.isEmpty() && tokens.get(0).equals("run")) {
+				ArrayList<String> expTokens = new ArrayList<>(tokens.subList(1, tokens.size()));
+				preparser(expTokens);
+				try {
+					Expression exp = parser.parse(expTokens);
+					Expression result = Runner.run(exp);
+					System.out.println(result.toString());
+				} catch (Exception e) {
+					System.out.println("Unparsable expression, input was: \"" + input + "\"");
+				}
+				input = cleanConsoleInput();
+				continue;
+			}
+
 			preparser(tokens);
 			String output = "";
 			
@@ -53,6 +82,7 @@ public class Console {
 				input = cleanConsoleInput();
 				continue;
 			}
+
 			
 			System.out.println(output);
 			

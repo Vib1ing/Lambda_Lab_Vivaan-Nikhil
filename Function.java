@@ -7,6 +7,17 @@ public class Function implements Expression {
         this.v = v;
         this.e = e;
     }
+    public Variable getParam() {
+        return v;
+    }
+
+    public Expression getBody() {
+        return e;
+    }
+
+    public void setBody(Expression e) {
+        this.e = e;
+    }
 
     public String toString() {
         return "(λ" + v + "." + e + ")";
