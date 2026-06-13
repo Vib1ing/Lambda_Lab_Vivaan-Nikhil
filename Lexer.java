@@ -1,7 +1,5 @@
-
+// Nikhil Maalige & Vivaan Joshi
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Lexer {
 
@@ -28,6 +26,7 @@ public class Lexer {
 					tokens.add(temp);
 					temp = "";
 				}
+
 				if(current != ' '){
 					if(current == 'λ') {
 						tokens.add("\\");
@@ -36,17 +35,19 @@ public class Lexer {
 						tokens.add(Character.toString(current));
 					}
 				}
+
 				counter++;
 			} else {
 				temp += Character.toString(current);
 				counter++;
 			}
+
 		}
+
 		if (!temp.isEmpty()) {
 			tokens.add(temp);
 		}
-		//System.out.println(tokens);
+
 		return tokens;
 	}
-
 }

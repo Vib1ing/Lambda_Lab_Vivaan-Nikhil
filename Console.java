@@ -1,4 +1,4 @@
-
+// Nikhil Maalige & Vivaan Joshi
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -21,7 +21,13 @@ public class Console {
 		while (!input.equals("exit")) {
 			
 			ArrayList<String> tokens = lexer.tokenize(input);
-			
+
+			if (tokens.isEmpty()) {
+				System.out.println();
+				input = cleanConsoleInput();
+				continue;
+			}
+
 			if (tokens.indexOf("=") == 1) {
 				String var = tokens.get(0);
 				if (definitions.containsKey(var)) {
@@ -29,6 +35,7 @@ public class Console {
 					input = cleanConsoleInput(); // i may or may not have encountered an infinite loop
 					continue;
 				}
+
 				ArrayList<String> expTokens = new ArrayList<>(tokens.subList(2, tokens.size()));
 				if (!expTokens.isEmpty() && expTokens.get(0).equals("run")) {
 					expTokens.remove(0); // strip the "run" keyword
@@ -73,7 +80,7 @@ public class Console {
 
 			preparser(tokens);
 			String output = "";
-			
+
 			try {
 				Expression exp = parser.parse(tokens);
 				output = exp.toString();
@@ -83,9 +90,8 @@ public class Console {
 				continue;
 			}
 
-			
 			System.out.println(output);
-			
+
 			input = cleanConsoleInput();
 		}
 		System.out.println("Goodbye!");
@@ -93,43 +99,47 @@ public class Console {
 
 	// Step 4: Pre-Parser
 	private static void preparser(ArrayList<String> lexed) {
-		for(int i=0; i<lexed.size(); i++){
-			if(lexed.get(i).equals("\\")){
+		for(int i = 0; i < lexed.size(); i++) {
+			if(lexed.get(i).equals("\\")) {
 				boolean wrapped = false;
-				if(i > 0 && lexed.get(i - 1).equals("(")){
+
+				if(i > 0 && lexed.get(i - 1).equals("(")) {
 					wrapped=true;
 				}
-				if(!wrapped){
+
+				if(!wrapped) {
 					ArrayList<String> rest = new ArrayList<>(lexed.subList(i+1, lexed.size())); //ts is for nested lambdas cuz without this the lambdas wouldn't look like how they're supposed to and i lowkey forgot to fix this
 					preparser(rest);
-					while(lexed.size()>i+1){ //remove the rest of the lexed to avoid duplication
+
+					while(lexed.size()>i+1) { //remove the rest of the lexed to avoid duplication
 						lexed.remove(i+1);
 					}
-					lexed.addAll(rest);
 
+					lexed.addAll(rest);
 
 					lexed.add(i,"(");
 					i++; //because of the addition of the "(" have to increment ts so it points to the lambda again 😛
 
-					int depth_of_bracket=0;
-					int stop=lexed.size();
+					int depthOfBracket = 0;
+					int stop = lexed.size();
 
-					for(int j=i+1;j<lexed.size();j++){
-						if(lexed.get(j).equals("(")){
-							depth_of_bracket++;
+					for(int j = i + 1; j < lexed.size(); j++) {
+						if(lexed.get(j).equals("(")) {
+							depthOfBracket++;
 						}
-						else if(lexed.get(j).equals(")")){
-							if(depth_of_bracket==0){
+						else if(lexed.get(j).equals(")")) {
+							if(depthOfBracket==0) {
 								stop=j;
 								break;
 							}
 							else{
-								depth_of_bracket--;
+								depthOfBracket--;
 							}
 						}
 					}
+
 					lexed.add(stop, ")"); //add the ")" cuz thats where the lambda ends
-					i=stop; //skip to the stop cuz the inner loop incremented until there
+					i = stop; //skip to the stop cuz the inner loop incremented until there
 				}
 			}
 		}
